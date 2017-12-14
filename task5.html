@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge"> -->
+    <title>task5</title>
+    <style>
+        #jsdiv {
+            transition: all 0.7s;
+            text-align: center;
+            line-height: 70px;
+            font-size: 20px;
+        }
+
+        #div {
+            width: 150px;
+            height: 150px;
+            background: orange;
+            cursor: move;
+            position: absolute;
+            left: 300px;
+            top: 300px;
+            transition: background 2.5s;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="div"></div>
+    <script type="text/javascript">
+        //js动态生成DIV
+        var jsdiv = document.createElement("div");
+        jsdiv.setAttribute("id", "jsdiv");
+        jsdiv.style.cssText = "width: 150px;height: 150px;background: pink;margin-left: 300px;"
+        document.body.appendChild(jsdiv);
+        //为jsdiv绑定一个点击事件
+        jsdiv.addEventListener("click", move, false);
+        //颜色的改变为随机颜色
+        function randomColor() {
+            return '#' + (Math.random() * 0xffffff << 0).toString(16);
+        }
+
+        function move() {
+            jsdiv.style.background = randomColor();
+            if (jsdiv.style.marginLeft === "300px") {
+                jsdiv.style.marginLeft = "900px";
+            } else {
+                jsdiv.style.marginLeft = "300px";
+            }
+        }
+
+        var request = new XMLHttpRequest();
+        request.open("GET", "http://123.207.89.151/jrtt/forecast", true);
+        request.send();
+
+        request.onreadystatechange = function () {
+            if (request.readyState === 4 && request.status === 200) {
+                var forecast = JSON.parse(request.responseText);
+                var getForecast = function (a, b) {
+                    for (key1 in forecast) {
+                        if (key1 === a) {
+                            for (key2 in forecast[key1]) {
+                                if (key2 === b) {
+                                    return key2 + ": " + forecast[key1][key2];
+                                }
+                            }
+                        }
+                    }
+                }
+                jsdiv.innerHTML = getForecast("明天", "天气");
+            }
+        }
+
+        var div = document.getElementById("div");
+        div.onmousedown = function () {
+            div.onmousemove = mousemove;
+        }
+        
+        div.onmouseup = function () {
+            div.onmousemove = null;
+        }
+
+        function mousemove() {
+            div.style.left = (event.clientX - 75) + 'px';
+            div.style.top = (event.clientY - 75) + 'px';
+        }
+        
+        if (div.style.left + 300 > window.innerWidth || div.style.left < 0){
+            event.clientX === window.innerWidth;
+        }
+
+        setInterval("div.style.background = randomColor()", 2500)
+
+    </script>
+
+</body>
+
+</html>
